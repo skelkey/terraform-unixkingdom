@@ -80,7 +80,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-openvpn" {
     protocol  = "tcp"
 
     cidr_blocks = [
-      "192.168.2.0/24",
+      "${var.lan_subnet}",
     ]
   }
 
@@ -118,7 +118,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-saltstack" {
     protocol  = "tcp"
 
     cidr_blocks = [
-      "192.168.2.0/24",
+      "${var.lan_subnet}",
     ]
   }
 
@@ -150,7 +150,7 @@ resource "osc_route_table" "euw2-unixkingdom-administration" {
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   route {
-    cidr_block = "192.168.2.0/24"
+    cidr_block = "${var.lan_subnet}"
     gateway_id = "${osc_vpn_gateway.euw2-unixkingdom-vgw.id}"
   }
 
@@ -173,7 +173,7 @@ resource "osc_route_table" "euw2-unixkingdom-public" {
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   route {
-    cidr_block = "192.168.2.0/24"
+    cidr_block = "${var.lan_subnet}"
     gateway_id = "${osc_vpn_gateway.euw2-unixkingdom-vgw.id}"
   }
 
