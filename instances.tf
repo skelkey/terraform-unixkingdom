@@ -30,16 +30,6 @@ resource "osc_instance" "euw2a-prd-unixkingdom-saltstack-1" {
   tags {
     Name = "euw2-prd-unixkingdom-saltstack-1"
   }
-
-  provisioner "salt-masterless" {
-    connection {
-      type = "ssh"
-      user = "${var.user}"
-      private_key = "${file(var.private_key)}"
-    }
-
-    local_state_tree = "srv/salt"
-  }
 }
 
 output "euw2a-prd-unixkingdom-openvpn-1" {
