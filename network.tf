@@ -70,82 +70,6 @@ resource "osc_vpn_connection" "euw2-unixkingdom-vpn-paris15" {
   static_routes_only  = false
 }
 
-resource "osc_security_group" "euw2-prd-unixkingdom-openvpn" {
-  name = "euw2-prd-unixkingdom-openvpn"
-  description = "euw2-prd-unixkingdom-openvpn"
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
-
-  tags {
-    Name    = "euw2-prd-unixkingdom-openvpn"
-  }
-}
-
-resource "osc_security_group" "euw2-prd-unixkingdom-saltstack" {
-  name = "euw2-prd-unixkingdom-saltstack"
-  description = "euw2-prd-unixkingdom-saltstack"
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
-
-  tags {
-    Name    = "euw2-prd-unixkingdom-saltstack"
-  }
-}
-
 resource "osc_route_table" "euw2-unixkingdom-administration" {
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
@@ -201,6 +125,11 @@ resource "osc_internet_gateway" "euw2-unixkingdom-internet" {
 }
 
 resource "osc_eip" "euw2-unixkingdom-public-nat" {
+  vpc = true
+}
+
+resource "osc_eip" "euw2-unixkingdom-public-vpn" {
+  network_interface = "${osc_instance.euw2a-prd-unixkingdom-openvpn-1.network_interface_id}"
   vpc = true
 }
 
