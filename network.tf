@@ -116,6 +116,52 @@ resource "osc_route_table_association" "euw2-unixkingdom-public" {
   route_table_id = "${osc_route_table.euw2-unixkingdom-public.id}"
 }
 
+resource "osc_route_table" "euw2-unixkingdom-application" {
+  vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
+
+  route {
+    cidr_block = "${var.lan_subnet}"
+    gateway_id = "${osc_vpn_gateway.euw2-unixkingdom-vgw.id}"
+  }
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${osc_nat_gateway.euw2-unixkingdom.id}"
+  }
+
+  tags {
+    Name = "euw2-unixkingdom-application"
+  }
+}
+
+resource "osc_route_table_association" "euw2-unixkingdom-application" {
+  subnet_id = "${osc_subnet.euw2-unixkingdom-application.id}"
+  route_table_id = "${osc_route_table.euw2-unixkingdom-application.id}"
+}
+
+resource "osc_route_table" "euw2-unixkingdom-storage" {
+  vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
+
+  route {
+    cidr_block = "${var.lan_subnet}"
+    gateway_id = "${osc_vpn_gateway.euw2-unixkingdom-vgw.id}"
+  }
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${osc_nat_gateway.euw2-unixkingdom.id}"
+  }
+
+  tags {
+    Name = "euw2-unixkingdom-storage"
+  }
+}
+
+resource "osc_route_table_association" "euw2-unixkingdom-storage" {
+  subnet_id = "${osc_subnet.euw2-unixkingdom-storage.id}"
+  route_table_id = "${osc_route_table.euw2-unixkingdom-storage.id}"
+}
+
 resource "osc_internet_gateway" "euw2-unixkingdom-internet" {
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
@@ -129,7 +175,7 @@ resource "osc_eip" "euw2-unixkingdom-public-nat" {
 }
 
 resource "osc_eip" "euw2-unixkingdom-public-vpn" {
-  network_interface = "${osc_instance.euw2a-prd-unixkingdom-openvpn-1.network_interface_id}"
+  network_interface = "${osc_instance.euw2a-prd-unixkingdom-strongswan-1.network_interface_id}"
   vpc = true
 }
 
