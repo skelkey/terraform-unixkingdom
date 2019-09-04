@@ -6,6 +6,15 @@ resource "osc_vpc" "euw2-unixkingdom-network" {
   }
 }
 
+resource "osc_vpc_dhcp_options" "euw2-unixkingdom-dnsresolver" {
+  domain_name_servers = [ "172.16.4.69", "172.16.4.70" ]
+}
+
+resource "osc_vpc_dhcp_options_association" "euw2-unixkingdom-dhcpopt" {
+  vpc_id          = "${osc_vpc.euw2-unixkingdom-network.id}"
+  dhcp_options_id = "${osc_vpc_dhcp_options.euw2-unixkingdom-dnsresolver.id}"
+}
+
 resource "osc_subnet" "euw2-unixkingdom-public" {
   vpc_id            = "${osc_vpc.euw2-unixkingdom-network.id}"
   cidr_block        = "172.16.1.0/24"

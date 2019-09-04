@@ -3,6 +3,7 @@ resource "osc_instance" "euw2a-prd-unixkingdom-bind-1" {
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
   key_name          = "${var.sshkey}"
+  private_ip        = "172.16.4.69"
 
   vpc_security_group_ids = [
     "${osc_security_group.euw2-prd-unixkingdom-bind.id}"
@@ -24,6 +25,7 @@ resource "osc_instance" "euw2a-prd-unixkingdom-bind-2" {
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
   key_name          = "${var.sshkey}"
+  private_ip        = "172.16.4.70"
 
   vpc_security_group_ids = [
     "${osc_security_group.euw2-prd-unixkingdom-bind.id}"
