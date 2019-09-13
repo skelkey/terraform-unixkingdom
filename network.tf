@@ -57,7 +57,7 @@ resource "osc_subnet" "euw2-unixkingdom-administration" {
 
 resource "osc_customer_gateway" "euw2-unixkingdom-cgw-paris15" {
   bgp_asn    = 65000
-  ip_address = "82.254.168.142"
+  ip_address = "78.193.70.43"
   type       = "ipsec.1"
 
   tags {
