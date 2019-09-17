@@ -5,6 +5,9 @@ variable url_iam {}
 variable ami {}
 variable sshkey {}
 variable lan_subnet {}
+variable allowed_cidr {
+  type = "list"
+}
 
 provider "osc" {
   profile                     = "${var.profile}"

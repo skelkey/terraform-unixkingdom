@@ -28,9 +28,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-strongswan" {
     to_port   = 22
     protocol  = "tcp"
 
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
+    cidr_blocks = ["${var.allowed_cidr}"]
   }
 
   ingress {

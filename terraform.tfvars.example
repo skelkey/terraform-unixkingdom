@@ -5,4 +5,5 @@ url_iam = "eim.eu-west-2.outscale.com"
 ami = "<image_id_to_use>"
 sshkey = "<name_of_the_sshkey_to_use>"
 private_key = "<path_to_the_private_key>"
-subnet = "<cidr_for_local_network>"
+lan_subnet = "<cidr_for_local_network>"
+allowed_cidr = ["${var.lan_subnet}", "<another_cidr>", "..."]
