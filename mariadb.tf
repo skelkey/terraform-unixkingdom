@@ -39,7 +39,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-mariadb" {
     protocol  = "tcp"
 
     cidr_blocks = [
-      "${osc_instance.euw2a-prd-unixkingdom-ejbca-1.private_ip}",
+      "${osc_instance.vault-1.private_ip}",
     ]
   }
 
