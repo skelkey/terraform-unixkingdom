@@ -9,7 +9,7 @@ data "template_cloudinit_config" "vault_config" {
     content      = <<EOF
         preserve_hostname: false
         hostname: euw2a-prd-unixkingdom-vault-1
-        fqdn: euw2a-prd-unixkingdom-vault-1.unix-kingdom.lan
+        fqdn: euw2a-prd-unixkingdom-vault-1
         manage_etc_hosts: true
     EOF
   }
