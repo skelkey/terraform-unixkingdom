@@ -72,6 +72,16 @@ resource "osc_security_group" "repository" {
     ]
   }
 
+  ingress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.repository-lbu.id}",
+    ]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
