@@ -82,6 +82,16 @@ resource "osc_security_group" "repository" {
     ]
   }
 
+  ingress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.repository-lbu.id}",
+    ]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -139,6 +149,14 @@ resource "osc_security_group" "repository-lbu" {
     protocol  = "tcp"
 
     cidr_blocks = [ "0.0.0.0/0" ]
+  }
+
+  ingress = {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+
+    cidr_blocks = ["0.0.0.0/0" ]
   }
 
   ingress = {
