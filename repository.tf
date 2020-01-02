@@ -109,6 +109,13 @@ resource "osc_elb" "repository-lbu" {
     lb_protocol       = "HTTP"
   }
 
+  listener {
+    instance_port     = 443
+    instance_protocol = "TCP"
+    lb_port           = 443
+    lb_protocol       = "TCP"
+  } 
+
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
