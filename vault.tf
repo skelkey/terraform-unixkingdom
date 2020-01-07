@@ -53,6 +53,16 @@ resource "osc_security_group" "vault" {
   }
 
   ingress {
+    from_port = 8443
+    to_port   = 8443
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.vault-lbu.id}",
+    ]
+  }
+
+  ingress {
     from_port = -1
     to_port   = -1
     protocol  = "icmp"
@@ -100,7 +110,7 @@ resource "osc_elb" "vault-lbu" {
   }
 
   listener {
-    instance_port     = 443
+    instance_port     = 8443
     instance_protocol = "TCP"
     lb_port           = 443
     lb_protocol       = "TCP"
@@ -110,7 +120,7 @@ resource "osc_elb" "vault-lbu" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 3
-    target              = "TCP:443"
+    target              = "TCP:8443"
     interval            = 30
   }
 
@@ -136,7 +146,10 @@ resource "osc_security_group" "vault-lbu" {
     to_port   = 443
     protocol  = "tcp"
 
-    cidr_blocks = ["0.0.0.0/0" ]
+    cidr_blocks = [
+      "46.231.147.8/32",
+      "78.193.70.43/32",
+    ]
   }
 
   ingress = {
