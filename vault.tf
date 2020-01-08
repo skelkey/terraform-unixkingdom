@@ -25,7 +25,7 @@ resource "osc_instance" "vault-1" {
     "${osc_security_group.vault.id}",
   ]
 
-  subnet_id = "${osc_subnet.euw2-unixkingdom-administration.id}"
+  subnet_id = "${osc_subnet.euw2-unixkingdom-application.id}"
 
   tags {
     Name = "euw2a-prd-unixkingdom-vault-1"
