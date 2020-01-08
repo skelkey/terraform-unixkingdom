@@ -67,6 +67,16 @@ resource "osc_security_group" "vault" {
   }
 
   ingress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.vault-lbu.id}",
+    ]
+  }
+
+  ingress {
     from_port = -1
     to_port   = -1
     protocol  = "icmp"
