@@ -41,6 +41,10 @@ resource "osc_security_group" "euw2-prd-unixkingdom-mariadb" {
     cidr_blocks = [
       "${osc_instance.vault-1.private_ip}",
     ]
+
+    security_groups = [
+      "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+    ]
   }
 
   ingress {

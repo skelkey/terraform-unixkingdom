@@ -31,7 +31,9 @@ resource "osc_security_group" "euw2-prd-unixkingdom-strongswan" {
     cidr_blocks = [
         "${var.lan_subnet}",
         "171.33.74.198/32",
-        "46.231.144.177/32"
+        "46.231.144.177/32",
+        "78.193.70.43/32",
+        "46.231.147.8/32",
     ]
   }
 

@@ -31,6 +31,20 @@ resource "osc_security_group" "euw2-prd-unixkingdom-ldap" {
     cidr_blocks = [
       "${var.lan_subnet}",
     ]
+
+    security_groups = [
+      "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}"
+    ]
+  }
+
+  ingress {
+    from_port = 636
+    to_port   = 636
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+    ]
   }
 
   ingress {
