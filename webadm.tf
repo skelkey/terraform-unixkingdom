@@ -42,8 +42,8 @@ resource "osc_security_group" "euw2-prd-unixkingdom-webadm" {
     to_port   = 443
     protocol  = "tcp"
 
-    cidr_blocks = [
-      "172.16.0.0/16",
+    security_groups = [
+      "${osc_security_group.vault.id}",
     ]
   }
 
