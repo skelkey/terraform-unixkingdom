@@ -31,6 +31,10 @@ resource "osc_security_group" "euw2-prd-unixkingdom-mariadb" {
     cidr_blocks = [
       "${var.lan_subnet}",
     ]
+
+    security_groups = [
+      "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}",
+    ]
   }
 
   ingress {

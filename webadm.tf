@@ -43,7 +43,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-webadm" {
     protocol  = "tcp"
 
     security_groups = [
-      "${osc_security_group.vault.id}",
+      "${osc_security_group.haproxy.id}",
     ]
   }
 

@@ -57,6 +57,26 @@ resource "osc_security_group" "haproxy" {
   }
 
   ingress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "${var.lan_subnet}",
+    ]
+  } 
+
+  ingress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "${var.lan_subnet}",
+    ]
+  }
+
+  ingress {
     from_port = -1
     to_port   = -1
     protocol  = "icmp"
