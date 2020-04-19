@@ -64,6 +64,10 @@ resource "osc_security_group" "waproxy" {
     security_groups = [
       "${osc_security_group.haproxy.id}",
     ]
+
+    cidr_blocks = [
+      "${var.lan_subnet}",
+    ]
   }
 
   ingress {
