@@ -184,7 +184,7 @@ resource "osc_eip" "euw2-unixkingdom-public-nat" {
 }
 
 resource "osc_eip" "euw2-unixkingdom-public-vpn" {
-  network_interface = "${osc_instance.openvpn-1.network_interface_id}"
+  network_interface = "${osc_instance.euw2a-prd-unixkingdom-strongswan-1.network_interface_id}"
   vpc = true
 }
 
