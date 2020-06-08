@@ -1,27 +1,46 @@
-resource "osc_instance" "euw2a-prd-unixkingdom-strongswan-1" {
+data "template_cloudinit_config" "openvpn_config" {
+  part {
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.minion.rendered}"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = <<EOF
+        preserve_hostname: false
+        hostname: euw2a-prd-unixkingdom-openvpn-1
+        fqdn: euw2a-prd-unixkingdom-openvpn-1
+        manage_etc_hosts: true
+    EOF
+  }
+}
+
+resource "osc_instance" "openvpn-1" {
   ami               = "${var.ami}"
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
   key_name          = "${var.sshkey}"
 
   vpc_security_group_ids = [
-    "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}",
+    "${osc_security_group.openvpn.id}",
   ]
 
   subnet_id = "${osc_subnet.euw2-unixkingdom-administration.id}"
 
   tags {
-    Name = "euw2a-prd-unixkingdom-strongswan-1"
+    Name = "euw2a-prd-unixkingdom-openvpn-1"
   }
+
+  user_data = "${data.template_cloudinit_config.waproxy_config.rendered}"
 }
 
-output "euw2a-prd-unixkingdom-strongswan-1" {
-  value = "${osc_instance.euw2a-prd-unixkingdom-strongswan-1.private_ip}"
+output "openvpn-1" {
+  value = "${osc_instance.openvpn-1.private_ip}"
 }
 
-resource "osc_security_group" "euw2-prd-unixkingdom-strongswan" {
-  name = "euw2-prd-unixkingdom-strongswan"
-  description = "euw2-prd-unixkingdom-strongwan"
+resource "osc_security_group" "openvpn" {
+  name = "euw2-prd-unixkingdom-openvpn"
+  description = "euw2-prd-unixkingdom-openvpn"
 
   ingress {
     from_port = 22
@@ -53,18 +72,8 @@ resource "osc_security_group" "euw2-prd-unixkingdom-strongswan" {
   }
 
   ingress {
-    from_port = 500
-    to_port   = 500
-    protocol  = "udp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 4500
-    to_port   = 4500
+    from_port = 1194
+    to_port   = 1194
     protocol  = "udp"
 
     cidr_blocks = [
@@ -82,6 +91,6 @@ resource "osc_security_group" "euw2-prd-unixkingdom-strongswan" {
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
-    Name = "euw2-prd-unixkingdom-strongswan"
+    Name = "euw2-prd-unixkingdom-openvpn"
   }
 }
