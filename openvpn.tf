@@ -31,7 +31,7 @@ resource "osc_instance" "openvpn-1" {
     Name = "euw2a-prd-unixkingdom-openvpn-1"
   }
 
-  user_data = "${data.template_cloudinit_config.waproxy_config.rendered}"
+  user_data = "${data.template_cloudinit_config.openvpn_config.rendered}"
 }
 
 output "openvpn-1" {
