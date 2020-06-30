@@ -43,7 +43,8 @@ resource "osc_security_group" "euw2-prd-unixkingdom-ldap" {
     protocol  = "tcp"
 
     security_groups = [
-      "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+      "${osc_security_group.euw2-prd-unixkingdom-webadm.id}",
+      "${osc_security_group.radius.id}"
     ]
   }
 
