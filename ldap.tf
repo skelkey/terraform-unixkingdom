@@ -46,6 +46,24 @@ resource "osc_security_group" "euw2-prd-unixkingdom-ldap" {
       "${osc_security_group.euw2-prd-unixkingdom-webadm.id}",
       "${osc_security_group.radius.id}"
     ]
+
+    cidr_blocks = [
+      "${var.lan_subnet}",
+    ]
+  }
+
+  ingress {
+    from_port = 389
+    to_port   = 389
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.radius.id}"
+    ]
+
+    cidr_blocks = [
+      "${var.lan_subnet}",
+    ]
   }
 
   ingress {
