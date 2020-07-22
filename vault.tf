@@ -161,6 +161,7 @@ resource "osc_security_group" "vault-lbu" {
     protocol  = "tcp"
 
     cidr_blocks = [
+      "${osc_eip.euw2-unixkingdom-public-nat.public_ip}",
       "46.231.147.8/32",
       "78.193.70.43/32",
     ]
