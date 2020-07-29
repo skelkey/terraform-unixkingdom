@@ -162,7 +162,9 @@ resource "osc_security_group" "vault-lbu" {
 
     cidr_blocks = [
       "${osc_eip.euw2-unixkingdom-public-nat.public_ip}",
+      "${osc_eip.euw2-unixkingdom-public-vpn.public_ip}",
       "46.231.147.8/32",
+      "46.231.144.177/32",
       "78.193.70.43/32",
     ]
   }
