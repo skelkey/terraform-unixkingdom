@@ -33,7 +33,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-mariadb" {
     ]
 
     security_groups = [
-      "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}",
+      "${osc_security_group.strongswan.id}",
     ]
   }
 

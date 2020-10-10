@@ -1,11 +1,28 @@
-resource "osc_instance" "euw2a-prd-unixkingdom-strongswan-1" {
+data "template_cloudinit_config" "strongswan_config" {
+  part {
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.minion.rendered}"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = <<EOF
+        preserve_hostname: false
+        hostname: euw2a-prd-unixkingdom-strongswan-1
+        fqdn: euw2a-prd-unixkingdom-strongswan-1
+        manage_etc_hosts: true
+    EOF
+  }
+}
+
+resource "osc_instance" "strongswan-1" {
   ami               = "${var.ami}"
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
   key_name          = "${var.sshkey}"
 
   vpc_security_group_ids = [
-    "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}",
+    "${osc_security_group.strongswan.id}",
   ]
 
   subnet_id = "${osc_subnet.euw2-unixkingdom-administration.id}"
@@ -13,13 +30,15 @@ resource "osc_instance" "euw2a-prd-unixkingdom-strongswan-1" {
   tags {
     Name = "euw2a-prd-unixkingdom-strongswan-1"
   }
+
+  user_data = "${data.template_cloudinit_config.strongswan_config.rendered}"
 }
 
-output "euw2a-prd-unixkingdom-strongswan-1" {
-  value = "${osc_instance.euw2a-prd-unixkingdom-strongswan-1.private_ip}"
+output "strongswan-1" {
+  value = "${osc_instance.strongswan-1.private_ip}"
 }
 
-resource "osc_security_group" "euw2-prd-unixkingdom-strongswan" {
+resource "osc_security_group" "strongswan" {
   name = "euw2-prd-unixkingdom-strongswan"
   description = "euw2-prd-unixkingdom-strongwan"
 

@@ -52,7 +52,7 @@ resource "osc_security_group" "radius" {
     ]
 
     security_groups = [
-      "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}"
+      "${osc_security_group.strongswan.id}"
     ]
   }
 
@@ -65,16 +65,6 @@ resource "osc_security_group" "radius" {
       "0.0.0.0/0",
     ]
   }
-
-  ingress {
-    from_port = 1812
-    to_port   = 1812
-    protocol  = "udp"
-
-    security_groups = [
-      "${osc_security_group.euw2-prd-unixkingdom-strongswan.id}"
-    ]
-  } 
 
   egress {
     from_port   = 0
