@@ -139,7 +139,7 @@ resource "osc_elb" "vault-lbu" {
   }
 
   tags {
-    Name = "euw2a-prd-unixkingdom-repository-lbu"
+    Name = "euw2a-prd-unixkingdom-vault-lbu"
   }
 }
 
