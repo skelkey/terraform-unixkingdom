@@ -1,4 +1,21 @@
-resource "osc_instance" "euw2a-prd-unixkingdom-bind-1" {
+data "template_cloudinit_config" "bind-1_config" {
+  part {
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.minion.rendered}"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = <<EOF
+        preserve_hostname: false
+        hostname: euw2a-prd-unixkingdom-bind-1
+        fqdn: euw2a-prd-unixkingdom-bind-1
+        manage_etc_hosts: true
+    EOF
+  }
+}
+
+resource "osc_instance" "bind-1" {
   ami               = "${var.ami}"
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
@@ -6,7 +23,7 @@ resource "osc_instance" "euw2a-prd-unixkingdom-bind-1" {
   private_ip        = "172.16.4.69"
 
   vpc_security_group_ids = [
-    "${osc_security_group.euw2-prd-unixkingdom-bind.id}"
+    "${osc_security_group.bind.id}"
   ]
 
   subnet_id = "${osc_subnet.euw2-unixkingdom-administration.id}"
@@ -14,13 +31,32 @@ resource "osc_instance" "euw2a-prd-unixkingdom-bind-1" {
   tags {
     Name = "euw2a-prd-unixkingdom-bind-1"
   }
+
+  user_data = "${data.template_cloudinit_config.bind-1_config.rendered}"
 }
 
-output "euw2a-prd-unixkingdom-bind-1" {
-  value = "${osc_instance.euw2a-prd-unixkingdom-bind-1.private_ip}"
+output "bind-1" {
+  value = "${osc_instance.bind-1.private_ip}"
 }
 
-resource "osc_instance" "euw2a-prd-unixkingdom-bind-2" {
+data "template_cloudinit_config" "bind-2_config" {
+  part {
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.minion.rendered}"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = <<EOF
+        preserve_hostname: false
+        hostname: euw2a-prd-unixkingdom-bind-2
+        fqdn: euw2a-prd-unixkingdom-bind-2
+        manage_etc_hosts: true
+    EOF
+  }
+}
+
+resource "osc_instance" "bind-2" {
   ami               = "${var.ami}"
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
@@ -28,7 +64,7 @@ resource "osc_instance" "euw2a-prd-unixkingdom-bind-2" {
   private_ip        = "172.16.4.70"
 
   vpc_security_group_ids = [
-    "${osc_security_group.euw2-prd-unixkingdom-bind.id}"
+    "${osc_security_group.bind.id}"
   ]
 
   subnet_id = "${osc_subnet.euw2-unixkingdom-administration.id}"
@@ -36,13 +72,15 @@ resource "osc_instance" "euw2a-prd-unixkingdom-bind-2" {
   tags {
     Name = "euw2a-prd-unixkingdom-bind-2"
   }
+
+  user_data = "${data.template_cloudinit_config.bind-2_config.rendered}"
 }
 
-output "euw2a-prd-unixkingdom-bind-2" {
-  value = "${osc_instance.euw2a-prd-unixkingdom-bind-2.private_ip}"
+output "bind-2" {
+  value = "${osc_instance.bind-2.private_ip}"
 }
 
-resource "osc_security_group" "euw2-prd-unixkingdom-bind" {
+resource "osc_security_group" "bind" {
   name = "euw2-prd-unixkingdom-bind"
   description = "euw2-prd-unixkingdom-bind"
 

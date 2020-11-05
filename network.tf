@@ -7,7 +7,7 @@ resource "osc_vpc" "euw2-unixkingdom-network" {
 }
 
 resource "osc_vpc_dhcp_options" "euw2-unixkingdom-dnsresolver" {
-  domain_name_servers = [ "172.16.4.69", "172.16.4.70" ]
+  domain_name_servers = [ "172.16.4.69", "172.16.4.70", "8.8.8.8", "8.8.4.4" ]
 }
 
 resource "osc_vpc_dhcp_options_association" "euw2-unixkingdom-dhcpopt" {

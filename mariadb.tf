@@ -1,11 +1,28 @@
-resource "osc_instance" "euw2a-prd-unixkingdom-mariadb-1" {
+data "template_cloudinit_config" "mariadb-1_config" {
+  part {
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.minion.rendered}"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = <<EOF
+        preserve_hostname: false
+        hostname: euw2a-prd-unixkingdom-mariadb-1
+        fqdn: euw2a-prd-unixkingdom-mariadb-1
+        manage_etc_hosts: true
+    EOF
+  }
+}
+
+resource "osc_instance" "mariadb-1" {
   ami               = "${var.ami}"
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
   key_name          = "${var.sshkey}"
 
   vpc_security_group_ids = [
-    "${osc_security_group.euw2-prd-unixkingdom-mariadb.id}",
+    "${osc_security_group.mariadb.id}",
   ]
 
   subnet_id = "${osc_subnet.euw2-unixkingdom-storage.id}"
@@ -13,13 +30,15 @@ resource "osc_instance" "euw2a-prd-unixkingdom-mariadb-1" {
   tags {
     Name = "euw2a-prd-unixkingdom-mariadb-1"
   }
+
+  user_data = "${data.template_cloudinit_config.mariadb-1_config.rendered}"
 }
 
-output "euw2a-prd-unixkingdom-mariadb-1" {
-  value = "${osc_instance.euw2a-prd-unixkingdom-mariadb-1.private_ip}"
+output "mariadb-1" {
+  value = "${osc_instance.mariadb-1.private_ip}"
 }
 
-resource "osc_security_group" "euw2-prd-unixkingdom-mariadb" {
+resource "osc_security_group" "mariadb" {
   name = "euw2-prd-unixkingdom-mariadb"
   description = "euw2-prd-unixkingdom-mariadb"
 
