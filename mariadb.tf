@@ -62,7 +62,8 @@ resource "osc_security_group" "mariadb" {
     protocol  = "tcp"
 
     security_groups = [
-      "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+      "${osc_security_group.euw2-prd-unixkingdom-webadm.id}",
+      "${osc_security_group.passbolt.id}"
     ]
   }
 

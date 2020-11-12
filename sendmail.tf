@@ -1,4 +1,4 @@
-data "template_cloudinit_config" "passbolt_config" {
+data "template_cloudinit_config" "sendmail-1_config" {
   part {
     content_type = "text/cloud-config"
     content      = "${data.template_file.minion.rendered}"
@@ -8,39 +8,39 @@ data "template_cloudinit_config" "passbolt_config" {
     content_type = "text/cloud-config"
     content      = <<EOF
         preserve_hostname: false
-        hostname: euw2a-prd-unixkingdom-passbolt-1
-        fqdn: euw2a-prd-unixkingdom-passbolt-1
+        hostname: euw2a-prd-unixkingdom-sendmail-1
+        fqdn: euw2a-prd-unixkingdom-sendmail-1
         manage_etc_hosts: true
     EOF
   }
 }
 
-resource "osc_instance" "passbolt-1" {
+resource "osc_instance" "sendmail-1" {
   ami               = "ami-f929abe8"
   availability_zone = "${var.region}a"
   instance_type     = "c4.large"
   key_name          = "${var.sshkey}"
 
   vpc_security_group_ids = [
-    "${osc_security_group.passbolt.id}",
+    "${osc_security_group.sendmail.id}",
   ]
 
-  subnet_id = "${osc_subnet.euw2-unixkingdom-application.id}"
+  subnet_id = "${osc_subnet.euw2-unixkingdom-administration.id}"
 
   tags {
-    Name = "euw2a-prd-unixkingdom-passbolt-1"
+    Name = "euw2a-prd-unixkingdom-sendmail-1"
   }
 
-  user_data = "${data.template_cloudinit_config.passbolt_config.rendered}"
+  user_data = "${data.template_cloudinit_config.sendmail-1_config.rendered}"
 }
 
-output "passbolt-1" {
-  value = "${osc_instance.passbolt-1.private_ip}"
+output "sendmail-1" {
+  value = "${osc_instance.sendmail-1.private_ip}"
 }
 
-resource "osc_security_group" "passbolt" {
-  name = "euw2-prd-unixkingdom-passbolt"
-  description = "euw2-prd-unixkingdom-passbolt"
+resource "osc_security_group" "sendmail" {
+  name = "euw2-prd-unixkingdom-sendmail"
+  description = "euw2-prd-unixkingdom-sendmail"
 
   ingress {
     from_port = 22
@@ -67,12 +67,12 @@ resource "osc_security_group" "passbolt" {
   }
 
   ingress {
-    from_port = 443
-    to_port   = 443
+    from_port = 587
+    to_port   = 587
     protocol  = "tcp"
 
     security_groups = [
-      "${osc_security_group.haproxy.id}",
+      "${osc_security_group.passbolt.id}"
     ]
   }
 
@@ -96,6 +96,6 @@ resource "osc_security_group" "passbolt" {
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
-    Name    = "euw2-prd-unixkingdom-passbolt"
+    Name    = "euw2-prd-unixkingdom-sendmail"
   }
 }
