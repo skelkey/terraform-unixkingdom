@@ -67,6 +67,16 @@ resource "osc_security_group" "sendmail" {
   }
 
   ingress {
+    from_port = 465
+    to_port   = 465
+    protocol  = "tcp"
+
+    security_groups = [
+      "${osc_security_group.passbolt.id}"
+    ]
+  }
+
+  ingress {
     from_port = 587
     to_port   = 587
     protocol  = "tcp"
