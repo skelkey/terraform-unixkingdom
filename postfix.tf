@@ -57,6 +57,16 @@ resource "osc_security_group" "postfix" {
   }
 
   ingress {
+    from_port = 587
+    to_port   = 587
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "${var.lan_subnet}"
+    ]
+  }
+
+  ingress {
     from_port = -1
     to_port   = -1
     protocol  = "icmp"
