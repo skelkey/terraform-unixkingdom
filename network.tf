@@ -188,8 +188,8 @@ resource "osc_eip" "euw2-unixkingdom-public-vpn" {
   vpc = true
 }
 
-resource "osc_eip" "euw2-unixkingdom-public-smtp" [
-  network_instance = "${osc_instance.postfix-1.network_interface_id}"
+resource "osc_eip" "euw2-unixkingdom-public-smtp" {
+  network_interface = "${osc_instance.postfix-1.network_interface_id}"
   vpc = true
 }
 
