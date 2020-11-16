@@ -188,11 +188,6 @@ resource "osc_eip" "euw2-unixkingdom-public-vpn" {
   vpc = true
 }
 
-resource "osc_eip" "euw2-unixkingdom-public-smtp" {
-  network_interface = "${osc_instance.postfix-1.network_interface_id}"
-  vpc = true
-}
-
 resource "osc_nat_gateway" "euw2-unixkingdom" {
   allocation_id = "${osc_eip.euw2-unixkingdom-public-nat.id}"
   subnet_id = "${osc_subnet.euw2-unixkingdom-public.id}"
