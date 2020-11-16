@@ -44,7 +44,8 @@ resource "osc_security_group" "euw2-prd-unixkingdom-ldap" {
 
     security_groups = [
       "${osc_security_group.euw2-prd-unixkingdom-webadm.id}",
-      "${osc_security_group.radius.id}"
+      "${osc_security_group.radius.id}",
+      "${osc_security_group.passbolt.id}"
     ]
 
     cidr_blocks = [
