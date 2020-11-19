@@ -47,17 +47,8 @@ resource "osc_security_group" "strongswan" {
     to_port   = 22
     protocol  = "tcp"
 
-    ##
-    # FIXME: REMOVE ILLEGITIMATE PUBLIC IP
-    ##
     cidr_blocks = [
         "${var.lan_subnet}",
-        "171.33.74.198/32",
-        "46.231.144.177/32",
-        "78.193.70.43/32",
-        "78.219.120.92/32",
-        "46.231.147.8/32",
-        "88.121.69.139/32",
     ]
   }
 
