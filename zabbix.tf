@@ -72,6 +72,16 @@ resource "osc_security_group" "zabbix" {
     ]
   }
 
+  ingress {
+    from_port = 10051
+    to_port   = 10051
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "172.16.0.0/16"
+    ]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -84,4 +94,14 @@ resource "osc_security_group" "zabbix" {
   tags {
     Name = "euw2-prd-unixkingdom-zabbix"
   }
+}
+
+resource "osc_security_group_rule" "zabbix_zabbix" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.zabbix.id}"
 }

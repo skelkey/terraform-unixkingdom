@@ -67,16 +67,6 @@ resource "osc_security_group" "repository" {
   }
 
   ingress {
-    from_port = 4505
-    to_port   = 4506
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${osc_instance.euw2a-prd-unixkingdom-saltstack-1.private_ip}",
-    ]
-  }
-
-  ingress {
     from_port = 80
     to_port   = 80
     protocol  = "tcp"
@@ -108,6 +98,16 @@ resource "osc_security_group" "repository" {
   tags {
     Name    = "euw2-prd-unixkingdom-repository"
   }
+}
+
+resource "osc_security_group_rule" "zabbix_repository" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.repository.id}"
 }
 
 resource "osc_elb" "repository-lbu" {

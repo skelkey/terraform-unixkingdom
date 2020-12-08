@@ -90,3 +90,12 @@ resource "osc_security_group" "euw2-prd-unixkingdom-ldap" {
   }
 }
 
+resource "osc_security_group_rule" "zabbix_ldap" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.euw2-prd-unixkingdom-ldap.id}"
+}

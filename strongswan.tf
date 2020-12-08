@@ -95,3 +95,13 @@ resource "osc_security_group" "strongswan" {
     Name = "euw2-prd-unixkingdom-strongswan"
   }
 }
+
+resource "osc_security_group_rule" "zabbix_strongswan" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.strongswan.id}"
+}

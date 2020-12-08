@@ -86,16 +86,6 @@ resource "osc_security_group" "haproxy" {
     ]
   }
 
-  ingress {
-    from_port = 4505
-    to_port   = 4506
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${osc_instance.euw2a-prd-unixkingdom-saltstack-1.private_ip}",
-    ]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -108,4 +98,14 @@ resource "osc_security_group" "haproxy" {
   tags {
     Name    = "euw2-prd-unixkingdom-haproxy"
   }
+}
+
+resource "osc_security_group_rule" "zabbix_haproxy" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.haproxy.id}"
 }

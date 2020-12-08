@@ -127,3 +127,13 @@ resource "osc_security_group" "bind" {
     Name = "euw2-prd-unixkingdom-bind"
   }
 }
+
+resource "osc_security_group_rule" "zabbix_bind" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.bind.id}"
+}

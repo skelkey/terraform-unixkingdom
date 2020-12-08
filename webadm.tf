@@ -70,3 +70,13 @@ resource "osc_security_group" "euw2-prd-unixkingdom-webadm" {
     Name    = "euw2-prd-unixkingdom-webadm"
   }
 }
+
+resource "osc_security_group_rule" "zabbix_webadm" {
+  type      = "ingress"
+  from_port = 10050
+  to_port   = 10050
+  protocol  = "tcp"
+
+  source_security_group_id   = "${osc_security_group.zabbix.id}"
+  security_group_id          = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+}
