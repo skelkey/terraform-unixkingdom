@@ -98,5 +98,5 @@ resource "osc_security_group_rule" "zabbix_mariadb" {
   protocol  = "tcp"
 
   source_security_group_id   = "${osc_security_group.zabbix.id}"
-  security_group_id          = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+  security_group_id          = "${osc_security_group.mariadb.id}"
 }
