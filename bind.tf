@@ -84,43 +84,6 @@ resource "osc_security_group" "bind" {
   name = "euw2-prd-unixkingdom-bind"
   description = "euw2-prd-unixkingdom-bind"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = 53
-    to_port   = 53
-    protocol  = "udp"
-
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -128,7 +91,7 @@ resource "osc_security_group" "bind" {
   }
 }
 
-resource "osc_security_group_rule" "zabbix_bind" {
+resource "osc_security_group_rule" "bind_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
@@ -137,3 +100,54 @@ resource "osc_security_group_rule" "zabbix_bind" {
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.bind.id}"
 }
+
+resource "osc_security_group_rule" "bind_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+  
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.bind.id}"
+}
+
+resource "osc_security_group_rule" "bind_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.bind.id}"
+}
+
+resource "osc_security_group_rule" "bind_dns" {
+  type      = "ingress"
+  from_port = 53
+  to_port   = 53
+  protocol  = "udp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.bind.id}"
+}
+
+resource "osc_security_group_rule" "bind_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.bind.id}"
+}
+
+resource "osc_security_group_rule" "bind_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.bind.id}"
+}
+

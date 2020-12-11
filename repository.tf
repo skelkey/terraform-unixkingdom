@@ -42,57 +42,6 @@ resource "osc_security_group" "repository" {
   name = "euw2-prd-unixkingdom-repository"
   description = "euw2-prd-unixkingdom-repository"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-
-    security_groups = [
-      "${osc_security_group.strongswan.id}"
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-
-    security_groups = [
-      "${osc_security_group.repository-lbu.id}",
-    ]
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${osc_security_group.repository-lbu.id}",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -100,7 +49,7 @@ resource "osc_security_group" "repository" {
   }
 }
 
-resource "osc_security_group_rule" "zabbix_repository" {
+resource "osc_security_group_rule" "repository_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
@@ -108,6 +57,66 @@ resource "osc_security_group_rule" "zabbix_repository" {
 
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.repository.id}"
+}
+
+resource "osc_security_group_rule" "repository_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.repository.id}"
+}
+
+resource "osc_security_group_rule" "repository_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.repository.id}"
+}
+
+resource "osc_security_group_rule" "repository_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.repository.id}"
+}
+
+resource "osc_security_group_rule" "repository_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.repository.id}"
+}
+
+resource "osc_security_group_rule" "repository_http" {
+  type      = "ingress"
+  from_port = 80
+  to_port   = 80
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.repository-lbu.id}"
+  security_group_id        = "${osc_security_group.repository.id}"
+}
+
+resource "osc_security_group_rule" "repository_https" {
+  type      = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.repository-lbu.id}"
+  security_group_id        = "${osc_security_group.repository.id}"
 }
 
 resource "osc_elb" "repository-lbu" {

@@ -42,53 +42,6 @@ resource "osc_security_group" "strongswan" {
   name = "euw2-prd-unixkingdom-strongswan"
   description = "euw2-prd-unixkingdom-strongwan"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-        "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 500
-    to_port   = 500
-    protocol  = "udp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 4500
-    to_port   = 4500
-    protocol  = "udp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -96,7 +49,7 @@ resource "osc_security_group" "strongswan" {
   }
 }
 
-resource "osc_security_group_rule" "zabbix_strongswan" {
+resource "osc_security_group_rule" "strongswan_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
@@ -104,4 +57,54 @@ resource "osc_security_group_rule" "zabbix_strongswan" {
 
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.strongswan.id}"
+}
+
+resource "osc_security_group_rule" "strongswan_ssh" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.strongswan.id}"
+}
+
+resource "osc_security_group_rule" "strongswan_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.strongswan.id}"
+}
+
+resource "osc_security_group_rule" "strongswan_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.strongswan.id}"
+}
+
+resource "osc_security_group_rule" "strongswan_ike" {
+  type      = "ingress"
+  from_port = 500
+  to_port   = 500
+  protocol  = "udp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.strongswan.id}"
+}
+
+resource "osc_security_group_rule" "strongswan_nat" {
+  type      = "egress"
+  from_port = 4500
+  to_port   = 4500
+  protocol  = "udp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.strongswan.id}"
 }

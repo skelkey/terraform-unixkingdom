@@ -42,57 +42,6 @@ resource "osc_security_group" "haproxy" {
   name = "euw2-prd-unixkingdom-haproxy"
   description = "euw2-prd-unixkingdom-haproxy"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-
-    security_groups = [
-      "${osc_security_group.strongswan.id}",
-    ]
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-  } 
-
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -100,7 +49,7 @@ resource "osc_security_group" "haproxy" {
   }
 }
 
-resource "osc_security_group_rule" "zabbix_haproxy" {
+resource "osc_security_group_rule" "haproxy_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
@@ -109,3 +58,64 @@ resource "osc_security_group_rule" "zabbix_haproxy" {
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.haproxy.id}"
 }
+
+resource "osc_security_group_rule" "haproxy_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.haproxy.id}"
+}
+
+resource "osc_security_group_rule" "haproxy_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.haproxy.id}"
+}
+
+resource "osc_security_group_rule" "haproxy_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.haproxy.id}"
+}
+
+resource "osc_security_group_rule" "haproxy_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.haproxy.id}"
+}
+
+resource "osc_security_group_rule" "haproxy_https" {
+  type      = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.haproxy.id}"
+}
+
+resource "osc_security_group_rule" "haproxy_http" {
+  type      = "ingress"
+  from_port = 80
+  to_port   = 80
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.haproxy.id}"
+}
+

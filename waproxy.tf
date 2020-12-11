@@ -42,51 +42,6 @@ resource "osc_security_group" "waproxy" {
   name = "euw2-prd-unixkingdom-waproxy"
   description = "euw2-prd-unixkingdom-waproxy"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-
-    security_groups = [
-      "${osc_security_group.strongswan.id}"
-    ]
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${osc_security_group.haproxy.id}",
-    ]
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -102,4 +57,54 @@ resource "osc_security_group_rule" "zabbix_waproxy" {
 
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.waproxy.id}"
+}
+
+resource "osc_security_group_rule" "waproxy_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.waproxy.id}"
+}
+
+resource "osc_security_group_rule" "waproxy_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.waproxy.id}"
+}
+
+resource "osc_security_group_rule" "waproxy_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.waproxy.id}"
+}
+
+resource "osc_security_group_rule" "waproxy_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.waproxy.id}"
+}
+
+resource "osc_security_group_rule" "waproxy_https" {
+  type      = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.haproxy.id}"
+  security_group_id        = "${osc_security_group.waproxy.id}"
 }

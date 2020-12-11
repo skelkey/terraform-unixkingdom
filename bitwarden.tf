@@ -40,54 +40,7 @@ output "bitwarden-1" {
 
 resource "osc_security_group" "bitwarden" {
   name = "euw2-prd-unixkingdom-bitwarden"
-  description = "euw2-prd-unixkingdom-strongwan"
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-        "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 500
-    to_port   = 500
-    protocol  = "udp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 4500
-    to_port   = 4500
-    protocol  = "udp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  description = "euw2-prd-unixkingdom-bitwarden"
 
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
@@ -96,7 +49,7 @@ resource "osc_security_group" "bitwarden" {
   }
 }
 
-resource "osc_security_group_rule" "zabbix_bitwarden" {
+resource "osc_security_group_rule" "bitwarden_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
@@ -104,4 +57,54 @@ resource "osc_security_group_rule" "zabbix_bitwarden" {
 
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.bitwarden.id}"
+}
+
+resource "osc_security_group_rule" "bitwarden_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.bitwarden.id}"
+}
+
+resource "osc_security_group_rule" "bitwarden_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.bitwarden.id}"
+}
+
+resource "osc_security_group_rule" "bitwarden_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.bitwarden.id}"
+}
+
+resource "osc_security_group_rule" "bitwarden_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.bitwarden.id}"
+}
+
+resource "osc_security_group_rule" "bitwarden_https" {
+  type = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.haproxy.id}"
+  security_group_id        = "${osc_security_group.bitwarden.id}"
 }

@@ -23,47 +23,6 @@ resource "osc_security_group" "euw2-prd-unixkingdom-webadm" {
   name = "euw2-prd-unixkingdom-webadm"
   description = "euw2-prd-unixkingdom-webadm"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "${var.lan_subnet}",
-    ]
-
-    security_groups = [
-      "${osc_security_group.strongswan.id}"
-    ]
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${osc_security_group.haproxy.id}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -71,7 +30,7 @@ resource "osc_security_group" "euw2-prd-unixkingdom-webadm" {
   }
 }
 
-resource "osc_security_group_rule" "zabbix_webadm" {
+resource "osc_security_group_rule" "webadm_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
@@ -80,3 +39,53 @@ resource "osc_security_group_rule" "zabbix_webadm" {
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
 }
+
+resource "osc_security_group_rule" "webadm_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+}
+
+resource "osc_security_group_rule" "webadm_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+}
+
+resource "osc_security_group_rule" "webadm_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+}
+
+resource "osc_security_group_rule" "webadm_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+}
+
+resource "osc_security_group_rule" "webadm_https" {
+  type      = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.haproxy.id}"
+  security_group_id        = "${osc_security_group.euw2-prd-unixkingdom-webadm.id}"
+} 

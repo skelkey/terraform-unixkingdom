@@ -42,53 +42,6 @@ resource "osc_security_group" "zabbix" {
   name = "euw2-prd-unixkingdom-zabbix"
   description = "euw2-prd-unixkingdom-strongwan"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-        "${var.lan_subnet}",
-    ]
-  }
-
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol  = "icmp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${osc_security_group.haproxy.id}",
-    ]
-  }
-
-  ingress {
-    from_port = 10051
-    to_port   = 10051
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "172.16.0.0/16"
-    ]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
   tags {
@@ -104,4 +57,64 @@ resource "osc_security_group_rule" "zabbix_zabbix" {
 
   source_security_group_id   = "${osc_security_group.zabbix.id}"
   security_group_id          = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_ssh_lan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  cidr_blocks       = [ "${var.lan_subnet}" ]
+  security_group_id = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_ssh_strongswan" {
+  type      = "ingress"
+  from_port = 22
+  to_port   = 22
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.strongswan.id}"
+  security_group_id        = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_icmp" {
+  type      = "ingress"
+  from_port = -1
+  to_port   = -1
+  protocol  = "icmp"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_internet" {
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+
+  cidr_blocks       = [ "0.0.0.0/0" ]
+  security_group_id = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_https" {
+  type      = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.haproxy.id}",
+  security_group_id = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_server" {
+  type      = "ingress"
+  from_port = 10051
+  to_port   = 10051
+  protocol  = "tcp"
+
+  cidr_blocks = [ "172.16.0.0/16" ]
+  security_group_id = "${osc_security_group.zabbix.id}"
 }
