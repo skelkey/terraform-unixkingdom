@@ -25,10 +25,11 @@ resource "osc_instance" "zabbix-1" {
     "${osc_security_group.zabbix.id}",
   ]
 
-  subnet_id = "${osc_subnet.euw2-unixkingdom-application.id}"
+  subnet_id = "${osc_subnet.euw2-unixkingdom-public.id}"
 
   tags {
     Name = "euw2a-prd-unixkingdom-zabbix-1"
+    osc.fcu.eip.auto-attach = "${osc_eip.zabbix-1.public_ip}"
   }
 
   user_data = "${data.template_cloudinit_config.zabbix-1_config.rendered}"
@@ -109,7 +110,7 @@ resource "osc_security_group_rule" "zabbix_https" {
   security_group_id = "${osc_security_group.zabbix.id}"
 }
 
-resource "osc_security_group_rule" "zabbix_server" {
+resource "osc_security_group_rule" "zabbix_server_internal" {
   type      = "ingress"
   from_port = 10051
   to_port   = 10051
@@ -117,4 +118,23 @@ resource "osc_security_group_rule" "zabbix_server" {
 
   cidr_blocks = [ "172.16.0.0/16" ]
   security_group_id = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_security_group_rule" "zabbix_server_external" {
+  type      = "ingress"
+  from_port = 10051
+  to_port   = 10051
+  protocol  = "tcp"
+
+  cidr_blocks = "${var.zabbix_proxy_cidr}"
+  security_group_id = "${osc_security_group.zabbix.id}"
+}
+
+resource "osc_eip" "zabbix-1" {
+  vpc = true
+}
+
+resource "osc_eip_association" "zabbix-1" {
+  instance_id   = "${osc_instance.zabbix-1.id}"
+  allocation_id = "${osc_eip.zabbix-1.id}"
 }

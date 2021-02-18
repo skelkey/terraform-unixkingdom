@@ -65,7 +65,10 @@ resource "osc_security_group_rule" "strongswan_ssh" {
   to_port   = 22
   protocol  = "tcp"
 
-  cidr_blocks       = [ "${var.lan_subnet}" ]
+  cidr_blocks       = [
+                        "${var.lan_subnet}",
+                        "${var.allowed_external_cidr}"
+                      ]
   security_group_id = "${osc_security_group.strongswan.id}"
 }
 
@@ -100,7 +103,7 @@ resource "osc_security_group_rule" "strongswan_ike" {
 }
 
 resource "osc_security_group_rule" "strongswan_nat" {
-  type      = "egress"
+  type      = "ingress"
   from_port = 4500
   to_port   = 4500
   protocol  = "udp"

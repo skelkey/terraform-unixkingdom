@@ -6,6 +6,11 @@ variable url_elb {}
 variable ami {}
 variable sshkey {}
 variable lan_subnet {}
+variable allowed_external_cidr {}
+variable zabbix_proxy_cidr {
+  type = "list"
+  default = []
+}
 
 provider "osc" {
   profile                     = "${var.profile}"

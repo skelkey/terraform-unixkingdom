@@ -6,3 +6,5 @@ url_elb = "lbu.eu-west-2.outscale.com"
 ami = "<image_id_to_use>"
 sshkey = "<name_of_the_sshkey_to_use>"
 lan_subnet = "<cidr_for_local_network>"
+allowed_external_cidr = "<an_external_cidr_to_allow>"
+zabbix_proxy_cidr = [ "1.2.3.4" ]
