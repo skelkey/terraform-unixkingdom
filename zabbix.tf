@@ -41,7 +41,7 @@ output "zabbix-1" {
 
 resource "osc_security_group" "zabbix" {
   name = "euw2-prd-unixkingdom-zabbix"
-  description = "euw2-prd-unixkingdom-strongwan"
+  description = "euw2-prd-unixkingdom-zabbix"
 
   vpc_id = "${osc_vpc.euw2-unixkingdom-network.id}"
 
