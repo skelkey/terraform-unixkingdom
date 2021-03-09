@@ -49,14 +49,24 @@ resource "osc_security_group" "elasticsearch" {
   }
 }
 
+resource "osc_security_group_rule" "elasticsearch_kibana" {
+  type      = "ingress"
+  from_port = 9200
+  to_port   = 9200
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.kibana.id}"
+  security_group_id        = "${osc_security_group.elasticsearch.id}"
+}
+
 resource "osc_security_group_rule" "elasticsearch_zabbix" {
   type      = "ingress"
   from_port = 10050
   to_port   = 10050
   protocol  = "tcp"
 
-  source_security_group_id   = "${osc_security_group.zabbix.id}"
-  security_group_id          = "${osc_security_group.elasticsearch.id}"
+  source_security_group_id = "${osc_security_group.zabbix.id}"
+  security_group_id        = "${osc_security_group.elasticsearch.id}"
 }
 
 resource "osc_security_group_rule" "elasticsearch_ssh_lan" {
