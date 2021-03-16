@@ -79,6 +79,16 @@ resource "osc_security_group_rule" "kibana_ssh_strongswan" {
   security_group_id        = "${osc_security_group.kibana.id}"
 }
 
+resource "osc_security_group_rule" "kibana_https" {
+  type      = "ingress"
+  from_port = 5601
+  to_port   = 5601
+  protocol  = "tcp"
+
+  source_security_group_id = "${osc_security_group.haproxy.id}",
+  security_group_id = "${osc_security_group.kibana.id}"
+}
+
 resource "osc_security_group_rule" "kibana_icmp" {
   type      = "ingress"
   from_port = -1
