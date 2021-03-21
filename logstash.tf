@@ -79,6 +79,17 @@ resource "osc_security_group_rule" "logstash_ssh_strongswan" {
   security_group_id        = "${osc_security_group.logstash.id}"
 }
 
+
+resource "osc_security_group_rule" "logstash_syslog" {
+  type      = "ingress"
+  from_port = 10514
+  to_port   = 10514
+  protocol  = "udp"
+
+  cidr_blocks       = [ "172.16.0.0/16" ]
+  security_group_id = "${osc_security_group.logstash.id}"
+}
+
 resource "osc_security_group_rule" "logstash_icmp" {
   type      = "ingress"
   from_port = -1
