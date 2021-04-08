@@ -18,7 +18,7 @@ data "template_cloudinit_config" "elasticsearch-1_config" {
 resource "osc_instance" "elasticsearch-1" {
   ami               = "ami-f929abe8"
   availability_zone = "${var.region}a"
-  instance_type     = "c4.large"
+  instance_type     = "tinav4.c2r8p2"
   key_name          = "${var.sshkey}"
 
   vpc_security_group_ids = [

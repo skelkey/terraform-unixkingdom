@@ -18,7 +18,7 @@ data "template_cloudinit_config" "logstash-1_config" {
 resource "osc_instance" "logstash-1" {
   ami               = "ami-f929abe8"
   availability_zone = "${var.region}a"
-  instance_type     = "c4.large"
+  instance_type     = "tinav4.c2r8p2"
   key_name          = "${var.sshkey}"
 
   vpc_security_group_ids = [
@@ -85,6 +85,16 @@ resource "osc_security_group_rule" "logstash_syslog" {
   from_port = 10514
   to_port   = 10514
   protocol  = "udp"
+
+  cidr_blocks       = [ "172.16.0.0/16" ]
+  security_group_id = "${osc_security_group.logstash.id}"
+}
+
+resource "osc_security_group_rule" "logstash_beats" {
+  type      = "ingress"
+  from_port = 5044
+  to_port   = 5044
+  protocol  = "tcp"
 
   cidr_blocks       = [ "172.16.0.0/16" ]
   security_group_id = "${osc_security_group.logstash.id}"
